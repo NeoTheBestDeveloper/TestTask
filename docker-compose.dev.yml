@@ -1,0 +1,22 @@
+services:
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile.dev
+    env_file:
+      .env/.env.dev
+    ports:
+      - 8000:8000
+    volumes:
+      - ./api/src:/app
+  
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    env_file:
+      - .env/.env.dev
+    ports:
+    - 5173:5173
+    volumes:
+      - ./frontend:/app
