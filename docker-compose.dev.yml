@@ -35,3 +35,11 @@ services:
       timeout: 3s
       interval: 3s
       retries: 10
+  nginx:
+    depends_on:
+      - api
+    build:
+      dockerfile: Dockerfile
+      context: ./nginx
+    ports:
+      - 80:80
