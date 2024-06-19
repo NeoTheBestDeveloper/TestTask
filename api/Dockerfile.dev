@@ -17,10 +17,17 @@ WORKDIR /app
 
 COPY poetry.lock pyproject.toml /app/
 
+RUN apk update \
+    && apk add --virtual build-deps gcc python3-dev musl-dev \
+    && apk add --no-cache mariadb-dev
+
+
 # Configurate poetry and install requirement dependencies.
 RUN poetry config virtualenvs.create false && poetry install --no-dev --no-interaction --no-ansi
+
+RUN apk del build-deps
 
 # Copy project into container.
 COPY src /app
 
-CMD python manage.py runserver "0.0.0.0:8000"
+CMD python manage.py migrate && python manage.py runserver "0.0.0.0:8000"
