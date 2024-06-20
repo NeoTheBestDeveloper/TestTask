@@ -22,7 +22,6 @@ class EquipmentController(APIView):
 
     def get(self, _request: Request, pk: int) -> JsonResponse:
         equipment = self._service.fetch_by_id(pk)
-        print(equipment)
 
         if equipment is None:
             return JsonResponse(
@@ -124,12 +123,7 @@ class EquipmentControllerList(APIView):
             serializer = EquipmentSerializer(data=item)
 
             if not serializer.is_valid():
-                unprocessed_data.append(
-                    {
-                        "data": serializer.data,
-                        "detail": serializer.errors,
-                    }
-                )
+                unprocessed_data.append({"data": serializer.data, "detail": serializer.errors})
             else:
                 validated_data.append(serializer.validated_data)
 

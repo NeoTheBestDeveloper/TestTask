@@ -23,8 +23,6 @@ class UserRegistrationController(CreateAPIView):
 class UserLoginController(APIView):
     def post(self, request: Request) -> JsonResponse:
         user = authenticate(username=request.data["username"], password=request.data["password"])
-        print(request.data)
-        print(user)
         if user:
             token, created = Token.objects.get_or_create(user=user)
             return JsonResponse({"data": token.key, "detail": "ok"})
