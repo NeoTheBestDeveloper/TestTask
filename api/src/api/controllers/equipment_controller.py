@@ -1,8 +1,11 @@
 from dataclasses import asdict
 from typing import Final
+
 from django.http import JsonResponse
 from rest_framework.request import Request
 from rest_framework.status import HTTP_404_NOT_FOUND, HTTP_422_UNPROCESSABLE_ENTITY
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
 from api.serializers import EquipmentSerializer, UpdateEquipmentSerializer
@@ -18,6 +21,8 @@ DEFAULT_PAGINATION_LIMIT: Final[int] = 10
 
 
 class EquipmentController(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     _service: EquipmentService = EquipmentService()
 
     def get(self, _request: Request, pk: int) -> JsonResponse:
@@ -88,6 +93,8 @@ class EquipmentController(APIView):
 
 
 class EquipmentControllerList(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     _service: EquipmentService = EquipmentService()
 
     def get(self, request: Request) -> JsonResponse:
@@ -143,11 +150,8 @@ class EquipmentControllerList(APIView):
 
         return JsonResponse(
             {
-                "data": {
-                    "created_equipments": [asdict(item) for item in created_equipments],
-                    "not_created_equipments": unprocessed_data,
-                },
-                "detail": "",
+                "data": [asdict(item) for item in created_equipments],
+                "detail": unprocessed_data,
             },
             status=HTTP_422_UNPROCESSABLE_ENTITY,
         )
