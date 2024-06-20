@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .controllers import EquipmentController, EquipmentControllerList
+from .controllers import EquipmentController, EquipmentControllerList, EquipmentTypeControllerList
 
 __all__ = [
     "urlpatterns",
@@ -8,5 +8,6 @@ __all__ = [
 
 urlpatterns = [
     path("equipment/", EquipmentControllerList.as_view()),
-    path("equipment/<int:pk>", EquipmentController.as_view()),
+    path("equipment/<int:pk>/", EquipmentController.as_view()),
+    path("equipment-type/", EquipmentTypeControllerList.as_view()),
 ]

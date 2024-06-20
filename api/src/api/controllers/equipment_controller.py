@@ -1,3 +1,5 @@
+from dataclasses import asdict
+from typing import Final
 from django.http import JsonResponse
 from django.db import transaction
 from rest_framework.request import Request
@@ -12,8 +14,8 @@ __all__ = [
     "EquipmentControllerList",
 ]
 
-DEFAULT_PAGINATION_OFFSET = 1
-DEFAULT_PAGINATION_LIMIT = 10
+DEFAULT_PAGINATION_OFFSET: Final[int] = 1
+DEFAULT_PAGINATION_LIMIT: Final[int] = 10
 
 
 class EquipmentController(APIView):
@@ -31,10 +33,9 @@ class EquipmentController(APIView):
                 status=HTTP_404_NOT_FOUND,
             )
 
-        serializer = EquipmentSerializer(instance=equipment)
         return JsonResponse(
             {
-                "data": serializer.data,
+                "data": asdict(equipment),
                 "detail": "",
             },
         )
@@ -79,12 +80,11 @@ class EquipmentController(APIView):
 
         new_equipment = self._service.update(id=pk, **serializer.validated_data)
 
-        serializer = EquipmentSerializer(new_equipment)
         return JsonResponse(
             {
-                "data": serializer.data,
+                "data": asdict(new_equipment),
                 "detail": "ok",
-            }
+            },
         )
 
 
@@ -100,11 +100,9 @@ class EquipmentControllerList(APIView):
             page=request.query_params.get("page") or DEFAULT_PAGINATION_OFFSET,
         )
 
-        serializer = EquipmentSerializer(equipments, many=True)
-
         return JsonResponse(
             {
-                "data": serializer.data,
+                "data": [asdict(item) for item in equipments],
                 "detail": "",
             },
         )
@@ -131,11 +129,9 @@ class EquipmentControllerList(APIView):
 
         created_equipments = [self._service.create(**item) for item in serializer.validated_data]
 
-        serializer = EquipmentSerializer(created_equipments, many=True)
-
         return JsonResponse(
             {
-                "data": serializer.data,
+                "data": [asdict(item) for item in created_equipments],
                 "detail": "",
             },
         )
