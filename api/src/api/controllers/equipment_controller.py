@@ -1,10 +1,9 @@
 from dataclasses import asdict
-from typing import Final
 
 from django.http import JsonResponse
+from django.conf import settings
 from rest_framework.request import Request
 from rest_framework.status import HTTP_404_NOT_FOUND, HTTP_422_UNPROCESSABLE_ENTITY
-from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
@@ -16,17 +15,14 @@ __all__ = [
     "EquipmentControllerList",
 ]
 
-DEFAULT_PAGINATION_OFFSET: Final[int] = 1
-DEFAULT_PAGINATION_LIMIT: Final[int] = 10
-
 
 class EquipmentController(APIView):
-    authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     _service: EquipmentService = EquipmentService()
 
     def get(self, _request: Request, pk: int) -> JsonResponse:
         equipment = self._service.fetch_by_id(pk)
+        print(equipment)
 
         if equipment is None:
             return JsonResponse(
@@ -93,7 +89,6 @@ class EquipmentController(APIView):
 
 
 class EquipmentControllerList(APIView):
-    authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     _service: EquipmentService = EquipmentService()
 
@@ -102,8 +97,8 @@ class EquipmentControllerList(APIView):
             equipment_type_id=request.query_params.get("type_id"),
             serial_number=request.query_params.get("serial_number"),
             description=request.query_params.get("description"),
-            limit=request.query_params.get("limit") or DEFAULT_PAGINATION_LIMIT,
-            page=request.query_params.get("page") or DEFAULT_PAGINATION_OFFSET,
+            limit=request.query_params.get("limit") or settings.DEFAULT_PAGINATION_LIMIT,
+            page=request.query_params.get("page") or settings.DEFAULT_PAGINATION_OFFSET,
         )
 
         return JsonResponse(

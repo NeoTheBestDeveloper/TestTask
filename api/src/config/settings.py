@@ -3,9 +3,13 @@ from pathlib import Path
 from .env import Env
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
 DEBUG = Env("DEBUG", bool)
 SECRET_KEY = Env("SECRET_KEY", str)
 
+
+DEFAULT_PAGINATION_LIMIT = Env("DEFAULT_PAGINATION_LIMIT", str)
+DEFAULT_PAGINATION_OFFSET = Env("DEFAULT_PAGINATION_OFFSET", str)
 
 ALLOWED_HOSTS = [
     "*",
@@ -39,7 +43,7 @@ ROOT_URLCONF = "config.urls"
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.TokenAuthentication",
+        "users.authentication.CustomTokenAuthentication",
     ],
 }
 

@@ -58,7 +58,13 @@ class EquipmentRepository:
 
     def fetch_by_id(self, equipment_id: int) -> None | Equipment:
         try:
-            return self._manager.get(pk=equipment_id, archived=False)
+            result = self._manager.get(pk=equipment_id, archived=False)
+            return Equipment(
+                id=result.id,
+                type_id=result.type_id,
+                serial_number=result.serial_number,
+                description=result.description,
+            )
         except ObjectDoesNotExist:
             return None
 
