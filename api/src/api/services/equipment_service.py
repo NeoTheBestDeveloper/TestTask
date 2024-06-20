@@ -3,7 +3,6 @@ from typing import ClassVar
 from api.dto import Equipment
 from api.repositories import EquipmentRepository, EquipmentTypeRepository
 
-
 __all__ = [
     "EquipmentService",
 ]
@@ -25,8 +24,9 @@ class EquipmentService:
         serial_number: str | None = None,
         description: str | None = None,
         limit: int = 10,
-        offset: int = 0,
-    ) -> list[Equipment]: ...
+        page: int = 1,
+    ) -> list[Equipment]:
+        return self._repository.filter_with_pagination(equipment_type_id, serial_number, description, limit, page)
 
     def create(self, type_id: int, serial_number: str, description: str) -> Equipment:
         return self._repository.create(type_id, serial_number, description)

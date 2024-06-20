@@ -54,12 +54,22 @@ class EquipmentController(APIView):
 
 
 class EquipmentControllerList(APIView):
-    service: EquipmentService = EquipmentService()
+    _service: EquipmentService = EquipmentService()
 
-    def get(self, _request: Request) -> JsonResponse:
+    def get(self, request: Request) -> JsonResponse:
+        equipments = self._service.filter_by(
+            equipment_type_id=request.query_params.get("type_id"),
+            serial_number=request.query_params.get("serial_number"),
+            description=request.query_params.get("description"),
+            limit=request.query_params.get("limit") or 10,
+            page=request.query_params.get("page") or 1,
+        )
+
+        serializer = EquipmentSerializer(equipments, many=True)
+
         return JsonResponse(
             {
-                "data": [],
+                "data": serializer.data,
                 "detail": "",
             },
         )
@@ -84,7 +94,7 @@ class EquipmentControllerList(APIView):
                 status=HTTP_422_UNPROCESSABLE_ENTITY,
             )
 
-        created_equipments = [self.service.create(**item) for item in serializer.validated_data]
+        created_equipments = [self._service.create(**item) for item in serializer.validated_data]
 
         serializer = EquipmentSerializer(created_equipments, many=True)
 
