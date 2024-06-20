@@ -48,6 +48,13 @@ class EquipmentControllerList(APIView):
         )
 
     def post(self, request: Request) -> JsonResponse:
+        if not isinstance(request.data, list):
+            return JsonResponse(
+                {
+                    "data": "",
+                    "detail": "Expected JSON array",
+                },
+            )
         serializer = EquipmentSerializer(data=request.data, many=True)
 
         if not serializer.is_valid():
@@ -59,9 +66,7 @@ class EquipmentControllerList(APIView):
                 status=HTTP_422_UNPROCESSABLE_ENTITY,
             )
 
-        created_equipments = []
-        for item in serializer.validated_data:
-            created_equipments.append(self.service.create(**item))
+        created_equipments = [self.service.create(**item) for item in serializer.validated_data]
 
         serializer = EquipmentSerializer(created_equipments, many=True)
 
@@ -69,5 +74,5 @@ class EquipmentControllerList(APIView):
             {
                 "data": serializer.data,
                 "detail": "",
-            }
+            },
         )

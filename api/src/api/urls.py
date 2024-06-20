@@ -8,5 +8,5 @@ __all__ = [
 
 urlpatterns = [
     path("equipment/", EquipmentControllerList.as_view()),
-    path("equipment/<int:pk>.", EquipmentController.as_view()),
+    path("equipment/<int:pk>", EquipmentController.as_view()),
 ]

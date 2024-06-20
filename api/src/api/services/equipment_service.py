@@ -1,4 +1,4 @@
-from typing import ClassVar, NoReturn
+from typing import ClassVar
 
 from api.dto import Equipment
 from api.repositories import EquipmentRepository, EquipmentTypeRepository
@@ -28,10 +28,5 @@ class EquipmentService:
         offset: int = 0,
     ) -> list[Equipment]: ...
 
-    def create(self, type_id: int, serial_number: str, description: str) -> Equipment | NoReturn:
-        equipment_type = self._equipment_type_repository.fetch_by_id(type_id)
-
-        if equipment_type is None:
-            raise RuntimeError("Invalid type id")
-
+    def create(self, type_id: int, serial_number: str, description: str) -> Equipment:
         return self._repository.create(type_id, serial_number, description)
