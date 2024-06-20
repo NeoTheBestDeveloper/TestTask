@@ -1,12 +1,12 @@
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin
 
-from .models import Equipment, EquipmentType
+from .models import EquipmentModel, EquipmentTypeModel
 
 
-@admin.register(Equipment)
+@admin.register(EquipmentModel)
 class EquipmentAdmin(ModelAdmin): ...
 
 
-@admin.register(EquipmentType)
+@admin.register(EquipmentTypeModel)
 class EquipmentTypeAdmin(ModelAdmin): ...

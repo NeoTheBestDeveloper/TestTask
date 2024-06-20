@@ -1,7 +1,7 @@
-from .equipment import Equipment
-from .equipment_type import EquipmentType
+from .equipment import EquipmentModel
+from .equipment_type import EquipmentTypeModel
 
 __all__ = [
-    "Equipment",
-    "EquipmentType",
+    "EquipmentModel",
+    "EquipmentTypeModel",
 ]

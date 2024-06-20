@@ -1,11 +1,11 @@
 from django.db.models import CharField, Model
 
 __all__ = [
-    "EquipmentType",
+    "EquipmentTypeModel",
 ]
 
 
-class EquipmentType(Model):
+class EquipmentTypeModel(Model):
     name = CharField(verbose_name="Наименование типа", max_length=255, null=False)
     serial_number_mask = CharField(verbose_name="Маска серийного номера", max_length=255, null=False)
 
