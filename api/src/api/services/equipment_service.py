@@ -30,3 +30,6 @@ class EquipmentService:
 
     def create(self, type_id: int, serial_number: str, description: str) -> Equipment:
         return self._repository.create(type_id, serial_number, description)
+
+    def update(self, id: int, serial_number: str, description: str, type_id: int) -> Equipment:
+        return self._repository.update(id, serial_number, description, type_id)

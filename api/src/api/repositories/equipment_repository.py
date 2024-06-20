@@ -23,7 +23,9 @@ class EquipmentRepository:
         limit: int = 10,
         page: int = 1,
     ) -> list[Equipment]:
-        filter_settings = {}
+        filter_settings = {
+            "archived": False,
+        }
 
         if equipment_type_id is not None:
             filter_settings["type_id"] = equipment_type_id
@@ -70,3 +72,7 @@ class EquipmentRepository:
             model.serial_number,
             model.description,
         )
+
+    def update(self, id: int, serial_number: str, description: str, type_id: int) -> Equipment:
+        self._manager.filter(pk=id).update(serial_number=serial_number, description=description, type_id=type_id)
+        return Equipment(id, type_id, serial_number, description)
