@@ -21,6 +21,8 @@ class UserRegistrationController(CreateAPIView):
 
 
 class UserLoginController(APIView):
+    permission_classes = [AllowAny]
+
     def post(self, request: Request) -> JsonResponse:
         user = authenticate(username=request.data["username"], password=request.data["password"])
         if user:

@@ -35,7 +35,7 @@ class EquipmentController(APIView):
         return JsonResponse(
             {
                 "data": asdict(equipment),
-                "detail": "",
+                "detail": "ok",
             },
         )
 
@@ -103,7 +103,7 @@ class EquipmentControllerList(APIView):
         return JsonResponse(
             {
                 "data": [asdict(item) for item in equipments],
-                "detail": "",
+                "detail": "ok",
             },
         )
 
@@ -133,7 +133,7 @@ class EquipmentControllerList(APIView):
             return JsonResponse(
                 {
                     "data": [asdict(item) for item in created_equipments],
-                    "detail": "",
+                    "detail": "ok",
                 },
             )
 

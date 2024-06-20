@@ -24,6 +24,6 @@ class EquipmentTypeControllerList(APIView):
         return JsonResponse(
             {
                 "data": [asdict(i) for i in equipment_types],
-                "detail": "",
+                "detail": "ok",
             },
         )
