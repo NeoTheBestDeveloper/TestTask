@@ -1,7 +1,10 @@
+from typing import Mapping
+from re import match
+from django.db.models import ObjectDoesNotExist
 from rest_framework.serializers import CharField, IntegerField, Serializer, ValidationError
 from rest_framework.validators import UniqueValidator
 
-from api.models import EquipmentModel, EquipmentTypeModel
+from api.models import EquipmentModel
 
 __all__ = [
     "EquipmentSerializer",
@@ -22,9 +25,27 @@ class EquipmentSerializer(Serializer):
     )
     description = CharField(required=True)
 
-    def validate_type_id(self, value: int) -> int:
-        if not EquipmentTypeModel.objects.filter(pk=value).exists():
-            msg = f"Equipment type with id={value} does not exists"
+    def _regexp_pattern_from_mask(self, mask: str) -> str:
+        pattern = mask.replace("N", r"\d")
+        pattern = pattern.replace("A", "[A-Z]")
+        pattern = pattern.replace("a", "[a-z]")
+        pattern = pattern.replace("X", "[a-z0-9]")
+        pattern = pattern.replace("Z", r"[\-_@]")
+
+    def validate(self, attrs: Mapping) -> Mapping:
+        type_id = attrs["type_id"]
+        serial_number = attrs["serial_number"]
+
+        try:
+            type_obj = EquipmentModel.objects.get(pk=type_id)
+        except ObjectDoesNotExist:
+            msg = f"Equipment type with id={type_id} does not exists"
             raise ValidationError(msg)
 
-        return value
+        pattern = self._regexp_pattern_from_mask(type_obj.serial_number_mask)
+
+        if not match(pattern, serial_number):
+            msg = f"Serial number '{serial_number}' is not valid for mask '{type_obj.serial_number_mask}'"
+            raise ValidationError(msg)
+
+        return super().validate(attrs)

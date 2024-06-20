@@ -107,7 +107,6 @@ class EquipmentControllerList(APIView):
             },
         )
 
-    @transaction.atomic
     def post(self, request: Request) -> JsonResponse:
         if not isinstance(request.data, list):
             return JsonResponse(

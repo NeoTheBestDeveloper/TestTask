@@ -36,7 +36,7 @@ class EquipmentRepository:
         if description is not None:
             filter_settings["description"] = description
 
-        paginator = Paginator(self._manager.filter(**filter_settings), per_page=limit)
+        paginator = Paginator(self._manager.defer("archived").filter(**filter_settings), per_page=limit)
 
         try:
             result = paginator.page(page)
