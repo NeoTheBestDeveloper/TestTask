@@ -4,7 +4,7 @@ from django.db.models import ObjectDoesNotExist
 from rest_framework.serializers import CharField, IntegerField, Serializer, ValidationError
 from rest_framework.validators import UniqueValidator
 
-from api.models import EquipmentModel
+from api.models import EquipmentModel, EquipmentTypeModel
 
 __all__ = [
     "EquipmentSerializer",
@@ -26,18 +26,18 @@ class EquipmentSerializer(Serializer):
     description = CharField(required=True)
 
     def _regexp_pattern_from_mask(self, mask: str) -> str:
-        pattern = mask.replace("N", r"\d")
+        pattern = mask.replace("Z", r"[\-_@]")
+        pattern = pattern.replace("N", r"\d")
         pattern = pattern.replace("A", "[A-Z]")
         pattern = pattern.replace("a", "[a-z]")
-        pattern = pattern.replace("X", "[a-z0-9]")
-        pattern = pattern.replace("Z", r"[\-_@]")
+        return pattern.replace("X", "[A-Z0-9]")
 
     def validate(self, attrs: Mapping) -> Mapping:
         type_id = attrs["type_id"]
         serial_number = attrs["serial_number"]
 
         try:
-            type_obj = EquipmentModel.objects.get(pk=type_id)
+            type_obj = EquipmentTypeModel.objects.get(pk=type_id)
         except ObjectDoesNotExist:
             msg = f"Equipment type with id={type_id} does not exists"
             raise ValidationError(msg)

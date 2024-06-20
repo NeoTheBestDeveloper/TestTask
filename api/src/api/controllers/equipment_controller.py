@@ -1,7 +1,6 @@
 from dataclasses import asdict
 from typing import Final
 from django.http import JsonResponse
-from django.db import transaction
 from rest_framework.request import Request
 from rest_framework.status import HTTP_404_NOT_FOUND, HTTP_422_UNPROCESSABLE_ENTITY
 from rest_framework.views import APIView
@@ -115,22 +114,40 @@ class EquipmentControllerList(APIView):
                     "detail": "Expected JSON array",
                 },
             )
-        serializer = EquipmentSerializer(data=request.data, many=True)
 
-        if not serializer.is_valid():
+        validated_data = []
+        unprocessed_data = []
+
+        for item in request.data:
+            serializer = EquipmentSerializer(data=item)
+
+            if not serializer.is_valid():
+                unprocessed_data.append(
+                    {
+                        "data": serializer.data,
+                        "detail": serializer.errors,
+                    }
+                )
+            else:
+                validated_data.append(serializer.validated_data)
+
+        created_equipments = [self._service.create(**item) for item in validated_data]
+
+        if not unprocessed_data:
             return JsonResponse(
                 {
-                    "data": serializer.errors,
-                    "detail": "Invalid input data",
+                    "data": [asdict(item) for item in created_equipments],
+                    "detail": "",
                 },
-                status=HTTP_422_UNPROCESSABLE_ENTITY,
             )
-
-        created_equipments = [self._service.create(**item) for item in serializer.validated_data]
 
         return JsonResponse(
             {
-                "data": [asdict(item) for item in created_equipments],
+                "data": {
+                    "created_equipments": [asdict(item) for item in created_equipments],
+                    "not_created_equipments": unprocessed_data,
+                },
                 "detail": "",
             },
+            status=HTTP_422_UNPROCESSABLE_ENTITY,
         )
