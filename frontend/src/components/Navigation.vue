@@ -1,13 +1,23 @@
 <script setup>
-import { logoutAPI } from '@/api/auth';
-import  {RouterLink} from 'vue-router'
+import { logoutAPI } from '@/api/Auth';
+import { routerPush } from '@/router';
+import { useAuthStore } from '@/store/AuthStore';
+import { storeToRefs } from 'pinia';
+import { RouterLink } from 'vue-router'
+
+
+const store = useAuthStore();
+const { isAuthenticated } = storeToRefs(store);
 
 const logoutUser = async () => {
-    console.log("afsf");
     try {
         await logoutAPI();
+        isAuthenticated.value = false;
+        routerPush("login");
     } catch (error) {
         console.error(error);
+        isAuthenticated.value = false;
+        routerPush("login");
     }
 }
 

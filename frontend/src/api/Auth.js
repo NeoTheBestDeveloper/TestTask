@@ -1,4 +1,4 @@
-import { getClient, getUnauthorizedClient, setToken, deleteToken } from './config';
+import { getClient, getUnauthorizedClient, setToken, deleteToken } from './Config';
 
 export const loginAPI = async (username, password) => {
     const response = await getUnauthorizedClient().post("/user/login/", { username, password });
@@ -16,4 +16,8 @@ export const logoutAPI = async () => {
     const result = await getClient().post('/user/logout/');
     deleteToken();
     return result;
+}
+
+export const fetchMeAPI = async () => {
+    return await getClient().get("/user/me/");
 }

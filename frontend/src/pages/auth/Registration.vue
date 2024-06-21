@@ -1,7 +1,8 @@
 <script setup>
-import { registerAPI } from '@/api/auth';
-import { routerPush } from '@/router';
 import { ref } from 'vue';
+
+import { registerAPI } from '@/api/Auth';
+import { routerPush } from '@/router';
 
 const login = ref("");
 const email = ref("");

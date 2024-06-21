@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate
 from django.http import JsonResponse
 from rest_framework.authtoken.models import Token
 from rest_framework.generics import CreateAPIView
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.status import HTTP_401_UNAUTHORIZED
 from rest_framework.views import APIView
@@ -13,6 +13,7 @@ __all__ = [
     "UserRegistrationController",
     "UserLoginController",
     "UserLogoutController",
+    "FetchMeController",
 ]
 
 
@@ -31,6 +32,19 @@ class UserLoginController(APIView):
             return JsonResponse({"data": token.key, "detail": "ok"})
 
         return JsonResponse({"data": "", "detail": "Invalid credentials"}, status=HTTP_401_UNAUTHORIZED)
+
+
+class FetchMeController(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request: Request) -> JsonResponse:
+        serializer = UserSerializer(request.user)
+        return JsonResponse(
+            {
+                "data": serializer.data,
+                "detail": "ok",
+            }
+        )
 
 
 class UserLogoutController(APIView):

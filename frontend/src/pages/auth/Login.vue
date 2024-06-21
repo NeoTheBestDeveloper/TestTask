@@ -1,10 +1,14 @@
 <script setup>
-import { loginAPI } from '@/api/auth';
+import { loginAPI } from '@/api/Auth';
 import { routerPush } from '@/router';
+import { useAuthStore } from '@/store/AuthStore';
+import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
 
 const login = ref("");
 const password = ref("");
+const store = useAuthStore();
+const { isAuthenticated } = storeToRefs(store);
 
 const loginUser = async () => {
     try {
@@ -13,6 +17,7 @@ const loginUser = async () => {
         login.value = "";
         password.value = "";
 
+        isAuthenticated.value = true;
         routerPush("main");
     } catch (error) {
         console.log(error);
