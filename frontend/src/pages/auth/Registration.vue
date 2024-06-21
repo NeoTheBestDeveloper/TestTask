@@ -7,6 +7,7 @@ import { routerPush } from '@/router';
 const login = ref("");
 const email = ref("");
 const password = ref("");
+const valid = ref(false);
 
 const registerUser = async () =>  {
     try {
@@ -24,23 +25,21 @@ const registerUser = async () =>  {
 </script>
 
 <template>
-<div class="register">
-    <form v-on:submit.prevent="registerUser" class="register-form">
-        <div>
-            <label for="login">Логин</label>
-            <input type="text" id="login" v-model="login">
-        </div>
-        <div>
-            <label for="email">Почта</label>
-            <input type="email" id="email" v-model="email">
-        </div>
-        <div>
-            <label for="password">Пароль</label>
-            <input type="password" id="password" v-model="password">
-        </div>
-        <div>
-            <button type="submit">Зарегистрироваться</button>
-        </div>
-    </form>
-</div>
+<v-form v-model="valid" v-on:submit.prevent="registerUser" fluid class="fill-height d-flex" >
+    <v-row align="center" justify="center">
+      <v-sheet  ms="auto" width="20%">
+        <v-text-field v-model="login" label="Логин" hide-details required></v-text-field>
+        <v-text-field v-model="email" label="Почта" hide-details required type="email"></v-text-field>
+        <v-text-field v-model="password" label="Пароль" type="password" hide-details required></v-text-field>
+        <v-btn class="mt-2" type="submit" block>Зарегистрироваться</v-btn>
+        <RouterLink class="blue-link" to="/login">Уже есть аккаунт? Войти</RouterLink>
+      </v-sheet>
+    </v-row>
+</v-form>
 </template>
+
+<style>
+.blue-link {
+  color: blue;
+}
+</style>
