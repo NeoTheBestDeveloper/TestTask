@@ -17,12 +17,9 @@ __all__ = [
 
 class UserRegistrationController(CreateAPIView):
     serializer_class = UserSerializer
-    permission_classes = [AllowAny]
 
 
 class UserLoginController(APIView):
-    permission_classes = [AllowAny]
-
     def post(self, request: Request) -> JsonResponse:
         user = authenticate(username=request.data["username"], password=request.data["password"])
         if user:
