@@ -1,7 +1,23 @@
 <script setup>
+import { logoutAPI } from '@/api/auth';
 import  {RouterLink} from 'vue-router'
 
-const items = ["Выйти"];
+const logoutUser = async () => {
+    console.log("afsf");
+    try {
+        await logoutAPI();
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+const items = [
+    {
+        title: "Выйти",
+        action: logoutUser,
+    }
+];
+
 
 </script>
 
@@ -29,8 +45,8 @@ const items = ["Выйти"];
         </v-btn>
       </template>
       <v-list>
-        <v-list-item :key="index" :value="item" v-for="(item, index) in items">
-          <v-list-item-title>{{ item }}</v-list-item-title>
+        <v-list-item  :key="index" :value="item" v-for="(item, index) in items">
+          <v-list-item-title @click="item.action" >{{ item.title }}</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-menu>
