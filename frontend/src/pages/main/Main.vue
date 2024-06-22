@@ -1,17 +1,27 @@
 <script setup>
-import { fetchEquipmentsAPI } from '@/api/Equipment';
+import { deleteEquipmentAPI, fetchEquipmentsAPI } from '@/api/Equipment';
 import { ref } from 'vue'
 
 const equipments = ref([]);
 const isLoading = ref(true);
 
-const searchByCriteria = { "Серийный номер": "serial_number", 'Описание': "description", 'Тип оборудования': "type_id" };
-const searchBy = ref("");
-const selectedSearchByCriteria = ref(Object.keys(searchByCriteria)[0]);
+const searchByKeys = { "Серийный номер": "serial_number", 'Описание': "description" };
+const searchByValue = ref("");
+const selectedSearchByKey = ref(Object.keys(searchByKeys)[0]);
 
 const fetchEquipments = async () => {
-  const response = await fetchEquipmentsAPI(1, searchByCriteria[selectedSearchByCriteria.value], searchBy.value);
+  const response = await fetchEquipmentsAPI(1, searchByKeys[selectedSearchByKey.value], searchByValue.value);
   equipments.value = response.data.data;
+}
+
+const deleteEquipment = async (id) => {
+  await deleteEquipmentAPI(id);
+
+  for (let i = 0;   i < equipments.value.length; ++i) {
+    if (equipments.value[i].id == id) {
+      equipments.value.splice(i, 1);
+    }
+  }
 }
 
 </script>
@@ -20,17 +30,18 @@ const fetchEquipments = async () => {
   <v-sheet class="mt-5 ma-auto" width="80%">
     <v-form v-on:submit.prevent="fetchEquipments">
       <v-row>
-        <v-text-field width="60%" label="Поиск" class="mr-3" v-model="searchBy"></v-text-field>
-        <v-select width="20%" :items="Object.keys(searchByCriteria)" v-model="selectedSearchByCriteria"></v-select>
+        <v-text-field width="60%" label="Поиск" class="mr-3" v-model="searchByValue"></v-text-field>
+        <v-select width="20%" :items="Object.keys(searchByKeys)" v-model="selectedSearchByKey"></v-select>
         <v-btn type="submit" size="55px" class="d-print-block ml-2">
           <v-icon>mdi-account-search</v-icon>
         </v-btn>
       </v-row>
     </v-form>
-    <v-card class="mb-5" :title="" :subtitle="item.serial_number" :text="item.description" v-for="item in equipments"
+    <v-card class="mb-5" :title="item.type_name" :subtitle="item.serial_number" :text="item.description" v-for="item in equipments"
       :key="item.id">
       <v-card-actions>
         <v-btn>Отредактировать</v-btn>
+        <v-btn color="red" @click="deleteEquipment(item.id)">Удалить</v-btn>
       </v-card-actions>
     </v-card>
   </v-sheet>

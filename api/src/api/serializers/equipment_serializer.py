@@ -2,6 +2,7 @@ from typing import Mapping
 from re import match
 from django.db.models import ObjectDoesNotExist
 from rest_framework.serializers import CharField, IntegerField, Serializer, ValidationError
+from rest_framework.validators import UniqueTogetherValidator
 from rest_framework.validators import UniqueValidator
 
 from api.models import EquipmentModel, EquipmentTypeModel
@@ -14,16 +15,16 @@ __all__ = [
 class EquipmentSerializer(Serializer):
     id = IntegerField(required=False)
     type_id = IntegerField(required=True)
-    serial_number = CharField(
-        required=True,
-        max_length=255,
-        validators=[
-            UniqueValidator(
-                EquipmentModel.objects.filter(archived=False),
-            ),
-        ],
-    )
+    serial_number = CharField(required=True, max_length=255)
     description = CharField(required=True)
+
+    class Meta:
+        validators = [
+            UniqueTogetherValidator(
+                queryset=EquipmentModel.objects.filter(archived=False),
+                fields=["serial_number", "type_id"],
+            ),
+        ]
 
     def _regexp_pattern_from_mask(self, mask: str) -> str:
         pattern = mask.replace("Z", r"[\-_@]")

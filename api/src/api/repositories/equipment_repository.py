@@ -17,7 +17,6 @@ class EquipmentRepository:
 
     def filter_with_pagination(
         self,
-        equipment_type_id: int | None = None,
         serial_number: str | None = None,
         description: str | None = None,
         limit: int = 10,
@@ -27,25 +26,28 @@ class EquipmentRepository:
             "archived": False,
         }
 
-        if equipment_type_id is not None:
-            filter_settings["type_id"] = equipment_type_id
-
         if serial_number is not None:
             filter_settings["serial_number"] = serial_number
 
         if description is not None:
             filter_settings["description__icontains"] = description
 
-        print(filter_settings)
-
-        paginator = Paginator(self._manager.defer("archived").filter(**filter_settings), per_page=limit)
+        query_set = (
+            self._manager.defer("archived", "type_id", "type__serial_number_mask", "type__id")
+            .filter(**filter_settings)
+            .select_related("type")
+        )
+        paginator = Paginator(
+            query_set,
+            per_page=limit,
+        )
 
         try:
             result = paginator.page(page)
             return [
                 Equipment(
                     id=item.id,
-                    type_id=item.type_id,
+                    type_name=item.type.name,
                     serial_number=item.serial_number,
                     description=item.description,
                 )
@@ -59,16 +61,22 @@ class EquipmentRepository:
         self._manager.filter(pk=equipment_id, archived=False).update(archived=True)
 
     def fetch_by_id(self, equipment_id: int) -> None | Equipment:
-        try:
-            result = self._manager.get(pk=equipment_id, archived=False)
-            return Equipment(
-                id=result.id,
-                type_id=result.type_id,
-                serial_number=result.serial_number,
-                description=result.description,
-            )
-        except ObjectDoesNotExist:
+        result = (
+            self._manager.defer("archived", "type__serial_number_mask")
+            .select_related("type")
+            .filter(pk=equipment_id, archived=False)
+            .first()
+        )
+
+        if result is None:
             return None
+
+        return Equipment(
+            id=result.id,
+            type_name=result.type.name,
+            serial_number=result.serial_number,
+            description=result.description,
+        )
 
     def create(self, type_id: int, serial_number: str, description: str) -> Equipment:
         model = EquipmentModel(type_id=type_id, serial_number=serial_number, description=description)
@@ -76,7 +84,7 @@ class EquipmentRepository:
 
         return Equipment(
             model.id,
-            model.type_id,
+            model.type.name,
             model.serial_number,
             model.description,
         )

@@ -20,13 +20,12 @@ class EquipmentService:
 
     def filter_by(
         self,
-        equipment_type_id: int | None = None,
         serial_number: str | None = None,
         description: str | None = None,
         limit: int = 10,
         page: int = 1,
     ) -> list[Equipment]:
-        return self._repository.filter_with_pagination(equipment_type_id, serial_number, description, limit, page)
+        return self._repository.filter_with_pagination(serial_number, description, limit, page)
 
     def create(self, type_id: int, serial_number: str, description: str) -> Equipment:
         return self._repository.create(type_id, serial_number, description)

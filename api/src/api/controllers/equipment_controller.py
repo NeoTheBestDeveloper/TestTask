@@ -87,13 +87,27 @@ class EquipmentController(APIView):
         )
 
 
+from django.db import connection, reset_queries
+
+
+def log_sql(function):
+    def wrapper(*args, **kwargs):
+        reset_queries()
+        result = function(*args, **kwargs)
+        for query in connection.queries:
+            print("-" * 12)
+            print(f'{query["time"]}: {query["sql"]}')
+        return result
+
+    return wrapper
+
+
 class EquipmentControllerList(APIView):
     permission_classes = [IsAuthenticated]
     _service: EquipmentService = EquipmentService()
 
     def get(self, request: Request) -> JsonResponse:
         equipments = self._service.filter_by(
-            equipment_type_id=request.query_params.get("type_id"),
             serial_number=request.query_params.get("serial_number"),
             description=request.query_params.get("description"),
             limit=request.query_params.get("limit") or settings.DEFAULT_PAGINATION_LIMIT,
