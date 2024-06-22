@@ -34,7 +34,9 @@ class EquipmentRepository:
             filter_settings["serial_number"] = serial_number
 
         if description is not None:
-            filter_settings["description"] = description
+            filter_settings["description__icontains"] = description
+
+        print(filter_settings)
 
         paginator = Paginator(self._manager.defer("archived").filter(**filter_settings), per_page=limit)
 
