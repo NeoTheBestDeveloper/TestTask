@@ -8,16 +8,19 @@ const isLoading = ref(true);
 const searchByKeys = { "Серийный номер": "serial_number", 'Описание': "description" };
 const searchByValue = ref("");
 const selectedSearchByKey = ref(Object.keys(searchByKeys)[0]);
+const pagesCount = ref(0);
+const pageNum = ref(1);
 
 const fetchEquipments = async () => {
-  const response = await fetchEquipmentsAPI(1, searchByKeys[selectedSearchByKey.value], searchByValue.value);
-  equipments.value = response.data.data;
+  const response = await fetchEquipmentsAPI(pageNum.value, searchByKeys[selectedSearchByKey.value], searchByValue.value);
+  equipments.value = response.data.data.equipments;
+  pagesCount.value = response.data.data.pages_count;
 }
 
 const deleteEquipment = async (id) => {
   await deleteEquipmentAPI(id);
 
-  for (let i = 0;   i < equipments.value.length; ++i) {
+  for (let i = 0;  i < equipments.value.length; ++i) {
     if (equipments.value[i].id == id) {
       equipments.value.splice(i, 1);
     }
@@ -44,5 +47,6 @@ const deleteEquipment = async (id) => {
         <v-btn color="red" @click="deleteEquipment(item.id)">Удалить</v-btn>
       </v-card-actions>
     </v-card>
+    <v-pagination @click="fetchEquipments" v-model="pageNum" :length="pagesCount" v-if="pagesCount"></v-pagination>
   </v-sheet>
 </template>

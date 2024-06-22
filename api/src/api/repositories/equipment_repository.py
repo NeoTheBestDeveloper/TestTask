@@ -21,7 +21,7 @@ class EquipmentRepository:
         description: str | None = None,
         limit: int = 10,
         page: int = 1,
-    ) -> list[Equipment]:
+    ) -> tuple[int, list[Equipment]]:
         filter_settings = {
             "archived": False,
         }
@@ -44,7 +44,7 @@ class EquipmentRepository:
 
         try:
             result = paginator.page(page)
-            return [
+            return paginator.num_pages, [
                 Equipment(
                     id=item.id,
                     type_name=item.type.name,
@@ -55,7 +55,7 @@ class EquipmentRepository:
             ]
 
         except EmptyPage:
-            return []
+            return paginator.num_pages, []
 
     def soft_delete(self, equipment_id: int) -> None:
         self._manager.filter(pk=equipment_id, archived=False).update(archived=True)

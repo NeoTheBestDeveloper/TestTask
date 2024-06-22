@@ -107,7 +107,7 @@ class EquipmentControllerList(APIView):
     _service: EquipmentService = EquipmentService()
 
     def get(self, request: Request) -> JsonResponse:
-        equipments = self._service.filter_by(
+        pages_count, equipments = self._service.filter_by(
             serial_number=request.query_params.get("serial_number"),
             description=request.query_params.get("description"),
             limit=request.query_params.get("limit") or settings.DEFAULT_PAGINATION_LIMIT,
@@ -116,7 +116,10 @@ class EquipmentControllerList(APIView):
 
         return JsonResponse(
             {
-                "data": [asdict(item) for item in equipments],
+                "data": {
+                    "equipments": [asdict(item) for item in equipments],
+                    "pages_count": pages_count,
+                },
                 "detail": "ok",
             },
         )

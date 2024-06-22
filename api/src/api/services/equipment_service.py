@@ -24,7 +24,7 @@ class EquipmentService:
         description: str | None = None,
         limit: int = 10,
         page: int = 1,
-    ) -> list[Equipment]:
+    ) -> tuple[int, list[Equipment]]:
         return self._repository.filter_with_pagination(serial_number, description, limit, page)
 
     def create(self, type_id: int, serial_number: str, description: str) -> Equipment:
