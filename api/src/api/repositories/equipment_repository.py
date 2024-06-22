@@ -4,7 +4,7 @@ from django.core.paginator import EmptyPage, Paginator
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Manager
 
-from api.models import EquipmentModel
+from api.models import EquipmentModel, EquipmentTypeModel
 from api.dto import Equipment
 
 __all__ = [
@@ -14,6 +14,7 @@ __all__ = [
 
 class EquipmentRepository:
     _manager: ClassVar[Manager] = EquipmentModel.objects
+    _equipment_type_manager: ClassVar[Manager] = EquipmentTypeModel.objects
 
     def filter_with_pagination(
         self,
@@ -91,4 +92,5 @@ class EquipmentRepository:
 
     def update(self, id: int, serial_number: str, description: str, type_id: int) -> Equipment:
         self._manager.filter(pk=id).update(serial_number=serial_number, description=description, type_id=type_id)
-        return Equipment(id, type_id, serial_number, description)
+        new_type = self._equipment_type_manager.filter(pk=type_id).only("name").first()
+        return Equipment(id, new_type.name, serial_number, description)

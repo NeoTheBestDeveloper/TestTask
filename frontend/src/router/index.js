@@ -4,9 +4,11 @@ import Main from '@/pages/main/Main.vue';
 import Login from '@/pages/auth/Login.vue';
 import Registration from '@/pages/auth/Registration.vue';
 import Create from '@/pages/create/Create.vue';
+import Edit from '@/pages/edit/Edit.vue';
 import { useAuthStore } from '@/store/AuthStore';
 import { storeToRefs } from 'pinia';
 import { fetchMeAPI } from '@/api/Auth';
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -30,6 +32,11 @@ const router = createRouter({
       path: '/create',
       name: 'create-equipment',
       component: Create,
+    },
+    {
+      path: '/edit',
+      name: 'edit-equipment',
+      component: Edit,
     }
 
   ]

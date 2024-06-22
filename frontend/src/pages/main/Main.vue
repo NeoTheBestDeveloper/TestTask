@@ -1,5 +1,7 @@
 <script setup>
 import { deleteEquipmentAPI, fetchEquipmentsAPI } from '@/api/Equipment';
+import { routerPush } from '@/router';
+import { useEditEquipmentStore } from '@/store/EditEquipmentStore';
 import { ref } from 'vue'
 
 const equipments = ref([]);
@@ -27,6 +29,17 @@ const deleteEquipment = async (id) => {
   }
 }
 
+const goEditEquipment = (id, typeName, serialNumber, description) => {
+  const store = useEditEquipmentStore()
+
+  store.id = id;
+  store.typeName = typeName;
+  store.serialNumber = serialNumber;
+  store.description = description;
+
+  routerPush('edit-equipment');
+}
+
 </script>
 
 <template>
@@ -43,7 +56,7 @@ const deleteEquipment = async (id) => {
     <v-card class="mb-5" :title="item.type_name" :subtitle="item.serial_number" :text="item.description" v-for="item in equipments"
       :key="item.id">
       <v-card-actions>
-        <v-btn>Отредактировать</v-btn>
+        <v-btn @click="goEditEquipment(item.id, item.type_name, item.serial_number, item.description)">Отредактировать</v-btn>
         <v-btn color="red" @click="deleteEquipment(item.id)">Удалить</v-btn>
       </v-card-actions>
     </v-card>

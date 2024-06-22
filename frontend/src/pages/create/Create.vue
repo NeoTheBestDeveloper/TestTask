@@ -29,11 +29,10 @@ const createEquipment = async () => {
   });
 
   try {
-    
-  await createEquipmentsAPI(sendData);
-  description.value = "";
-  serialNumbers.value = [ref("")];
-  selectedType.value = "";
+    await createEquipmentsAPI(sendData);
+    description.value = "";
+    serialNumbers.value = [ref("")];
+    selectedType.value = "";
   } catch (error) {}
 
 }

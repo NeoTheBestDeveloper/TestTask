@@ -11,3 +11,7 @@ export const fetchEquipmentsAPI = async (page, filterByKey, filterByValue) => {
 export const deleteEquipmentAPI = async (id) => {
     return await getClient().delete(`/equipment/${id}/`)
 }
+
+export const editEquipmentAPI = async (id, serial_number, type_id, description) => {
+    return await getClient().put(`/equipment/${id}/`, { serial_number, type_id, description });
+}
