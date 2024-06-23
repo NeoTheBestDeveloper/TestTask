@@ -9,7 +9,7 @@ __all__ = [
 
 
 class UserLoginSerializer(Serializer):
-    username = CharField(max_length=255, required=True)
+    username = CharField(max_length=150, required=True)
     password = CharField(max_length=255, required=True)
 
 

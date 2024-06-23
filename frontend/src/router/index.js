@@ -6,8 +6,6 @@ import Registration from '@/pages/auth/Registration.vue';
 import Create from '@/pages/create/Create.vue';
 import Edit from '@/pages/edit/Edit.vue';
 import { useAuthStore } from '@/store/AuthStore';
-import { storeToRefs } from 'pinia';
-import { checkMeAuth } from '@/api/Auth';
 
 
 const router = createRouter({
@@ -17,41 +15,41 @@ const router = createRouter({
       path: '/',
       name: 'main',
       component: Main,
+      meta: { requiresAuth: true },
     },
     {
       path: '/login',
       name: 'login',
       component: Login,
+      meta: { requiresAuth: false },
     },
     {
       path: '/register',
       name: 'register',
       component: Registration,
+      meta: { requiresAuth: false },
     },
     {
       path: '/create',
       name: 'create-equipment',
       component: Create,
+      meta: { requiresAuth: true },
     },
     {
       path: '/edit',
       name: 'edit-equipment',
       component: Edit,
+      meta: { requiresAuth: true },
     }
 
   ]
 })
 
-router.beforeEach(async (to, from) => {
+router.beforeEach(async (to, _from) => {
   const store = useAuthStore();
-  const { isAuthenticated, isAuthChecked } = storeToRefs(store);
+  await store.checkAuth();
 
-  if (!isAuthChecked.value) {
-    isAuthChecked.value = true;
-    isAuthenticated.value = await checkMeAuth();
-  }
-
-  if (!isAuthenticated.value && (to.name !== 'login' && to.name !== 'register')) {
+  if (!store.isAuthenticated && to.meta.requiresAuth) {
     return { name: 'login' };
   }
 })

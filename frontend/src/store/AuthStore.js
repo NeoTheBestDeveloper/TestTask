@@ -1,9 +1,17 @@
+import { checkMeAuthAPI } from '@/api/Auth'
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
 
-export const useAuthStore = defineStore('auth', () => {
-    const isAuthenticated = ref(false);
-    const isAuthChecked = ref(false);
-
-    return { isAuthenticated, isAuthChecked };
+export const useAuthStore = defineStore('auth', {
+    state: () => ({
+        isAuthChecked: false,
+        isAuthenticated: false,
+    }),
+    actions: {
+        async checkAuth() {
+            if (!this.isAuthChecked) {
+                this.isAuthenticated = await checkMeAuthAPI();
+            }
+            this.isAuthChecked = true;
+        }
+    }
 })

@@ -18,7 +18,7 @@ export const logoutAPI = async () => {
     return result;
 }
 
-export const checkMeAuth = async () => {
+export const checkMeAuthAPI = async () => {
     const token = getToken();
     if (token === null) {
         return false;
