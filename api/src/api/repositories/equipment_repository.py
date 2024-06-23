@@ -3,8 +3,8 @@ from typing import ClassVar
 from django.core.paginator import EmptyPage, Paginator
 from django.db.models import Manager
 
-from api.models import EquipmentModel, EquipmentTypeModel
 from api.dto import Equipment
+from api.models import EquipmentModel, EquipmentTypeModel
 
 __all__ = [
     "EquipmentRepository",
@@ -12,7 +12,11 @@ __all__ = [
 
 
 class EquipmentRepository:
-    _manager: ClassVar[Manager] = EquipmentModel.objects
+    """Репозиторий для сущности Equipment.
+    Инкапсулирует в себе логику работы с базой данных.
+    """
+
+    _equipment_manager: ClassVar[Manager] = EquipmentModel.objects
     _equipment_type_manager: ClassVar[Manager] = EquipmentTypeModel.objects
 
     def filter_with_pagination(
@@ -22,6 +26,9 @@ class EquipmentRepository:
         limit: int = 10,
         page: int = 1,
     ) -> tuple[int, list[Equipment]]:
+        """Поиск оборудования по заданным параметрам с пагинацией.
+        Вернет котреж, где первый элемент - это число страниц в пагинации, а второй - это сама страница из оборудования.
+        """
         filter_settings = {
             "archived": False,
         }
@@ -33,7 +40,7 @@ class EquipmentRepository:
             filter_settings["description__icontains"] = description
 
         query_set = (
-            self._manager.defer("archived", "type_id", "type__serial_number_mask", "type__id")
+            self._equipment_manager.defer("archived", "type_id", "type__serial_number_mask", "type__id")
             .filter(**filter_settings)
             .select_related("type")
         )
@@ -61,14 +68,16 @@ class EquipmentRepository:
         except EmptyPage:
             return 0, []
 
-    def soft_delete(self, equipment_id: int) -> None:
-        self._manager.filter(pk=equipment_id, archived=False).update(archived=True)
+    def soft_delete(self, pk: int) -> None:
+        """Помечает указанное оборудование как удаленное, реального удаления из базы не происходит."""
+        self._equipment_manager.filter(pk=pk, archived=False).update(archived=True)
 
-    def fetch_by_id(self, equipment_id: int) -> None | Equipment:
+    def fetch_by_id(self, pk: int) -> None | Equipment:
+        """Поиск оборудования по id, вернет None, если не сможет найти."""
         result = (
-            self._manager.defer("archived", "type__serial_number_mask")
+            self._equipment_manager.defer("archived", "type__serial_number_mask")
             .select_related("type")
-            .filter(pk=equipment_id, archived=False)
+            .filter(pk=pk, archived=False)
             .first()
         )
 
@@ -83,6 +92,7 @@ class EquipmentRepository:
         )
 
     def create(self, type_id: int, serial_number: str, description: str) -> Equipment:
+        """Создание оборудования с указанными свойствами."""
         model = EquipmentModel(type_id=type_id, serial_number=serial_number, description=description)
         model.save()
 
@@ -93,7 +103,8 @@ class EquipmentRepository:
             model.description,
         )
 
-    def update(self, id: int, serial_number: str, description: str, type_id: int) -> Equipment:
-        self._manager.filter(pk=id).update(serial_number=serial_number, description=description, type_id=type_id)
+    def update(self, pk: int, serial_number: str, description: str, type_id: int) -> Equipment:
+        """Обновит поля serial_number, description, type_id у оборудования с указанным pk."""
+        self._manager.filter(pk=pk).update(serial_number=serial_number, description=description, type_id=type_id)
         new_type = self._equipment_type_manager.filter(pk=type_id).only("name").first()
-        return Equipment(id, new_type.name, serial_number, description)
+        return Equipment(pk, new_type.name, serial_number, description)

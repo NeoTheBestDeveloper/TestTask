@@ -73,7 +73,7 @@ DATABASES = {
         "PASSWORD": Env("DB_PASSWORD", str),
         "HOST": Env("DB_HOST", str),
         "PORT": Env("DB_PORT", int),
-    }
+    },
 }
 
 AUTH_PASSWORD_VALIDATORS = [

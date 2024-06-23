@@ -1,12 +1,16 @@
 from dataclasses import asdict
 
-from django.http import JsonResponse
 from django.conf import settings
+from django.http import JsonResponse
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
 
 from api.services import EquipmentTypeService
+
+__all__ = [
+    "EquipmentTypeControllerList",
+]
 
 
 class EquipmentTypeControllerList(APIView):
@@ -14,7 +18,8 @@ class EquipmentTypeControllerList(APIView):
     _service: EquipmentTypeService = EquipmentTypeService()
 
     def get(self, request: Request) -> JsonResponse:
-        equipment_types = self._service.filter_by(
+        """Получение списка из типов оборудования с пагинацией и фильтрацией."""
+        pages_count, equipment_types = self._service.filter_with_pagination(
             name=request.query_params.get("name"),
             serial_number_mask=request.query_params.get("serial_number_mask"),
             limit=request.query_params.get("limit") or settings.DEFAULT_PAGINATION_LIMIT,
@@ -23,7 +28,10 @@ class EquipmentTypeControllerList(APIView):
 
         return JsonResponse(
             {
-                "data": [asdict(i) for i in equipment_types],
+                "data": {
+                    "equipment_types": [asdict(item) for item in equipment_types],
+                    "pages_count": pages_count,
+                },
                 "detail": "ok",
             },
         )

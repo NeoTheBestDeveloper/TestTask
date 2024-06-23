@@ -21,6 +21,9 @@ class UserRegistrationController(CreateAPIView):
     _service: UserService = UserService()
 
     def post(self, request: Request) -> JsonResponse:
+        """Метод для регистрации пользователя. Он добавляет пользователя в базу и вернет его
+        вместе с id пользователю.
+        """
         serializer = UserCreateSerializer(data=request.data)
 
         if not serializer.is_valid():
@@ -39,6 +42,7 @@ class UserLoginController(APIView):
     _service: UserService = UserService()
 
     def post(self, request: Request) -> JsonResponse:
+        """Проверка логина и пароля пользователя. Если проверка успешна, то пользователю будет выдан access token."""
         serializer = UserLoginSerializer(data=request.data)
 
         if not serializer.is_valid():
@@ -59,6 +63,7 @@ class CheckTokenController(APIView):
     _service: UserService = UserService()
 
     def post(self, request: Request) -> JsonResponse:
+        """Проверка access токена на его наличие в базе. Так клиент сможет понять, валидная ли его текущая сессия."""
         token = request.data.get("token")
 
         if token is None:
@@ -80,5 +85,6 @@ class UserLogoutController(APIView):
     _service: UserService = UserService()
 
     def post(self, request: Request) -> JsonResponse:
+        """Завершения сессии пользователя. Метод удалит access токен из базы данных."""
         self._service.logout(request.user)
         return JsonResponse({"data": "", "detail": "ok"})

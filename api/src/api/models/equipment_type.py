@@ -6,6 +6,8 @@ __all__ = [
 
 
 class EquipmentTypeModel(Model):
+    """Модель данных, описывающая формат хранения в базе данных типа оборудования."""
+
     name = CharField(verbose_name="Наименование типа", max_length=255, null=False)
     serial_number_mask = CharField(verbose_name="Маска серийного номера", max_length=255, null=False)
 

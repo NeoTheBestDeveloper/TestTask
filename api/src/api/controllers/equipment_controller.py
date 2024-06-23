@@ -1,14 +1,14 @@
 from dataclasses import asdict
 
-from django.http import JsonResponse
 from django.conf import settings
+from django.http import JsonResponse
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.status import HTTP_404_NOT_FOUND, HTTP_422_UNPROCESSABLE_ENTITY
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
-from api.serializers import EquipmentSerializer, UpdateEquipmentSerializer
 from api.services import EquipmentService
+from api.serializers import EquipmentSerializer, UpdateEquipmentSerializer
 
 __all__ = [
     "EquipmentController",
@@ -20,7 +20,8 @@ class EquipmentController(APIView):
     permission_classes = [IsAuthenticated]
     _service: EquipmentService = EquipmentService()
 
-    def get(self, _request: Request, pk: int) -> JsonResponse:
+    def get(self, _: Request, pk: int) -> JsonResponse:
+        """Поиск конктретного оборудования по его id."""
         equipment = self._service.fetch_by_id(pk)
 
         if equipment is None:
@@ -40,6 +41,7 @@ class EquipmentController(APIView):
         )
 
     def delete(self, _request: Request, pk: int) -> JsonResponse:
+        """Удаление оборудования по его id."""
         equipment = self._service.fetch_by_id(pk)
 
         if equipment is None:
@@ -56,6 +58,7 @@ class EquipmentController(APIView):
         return JsonResponse({"data": "", "detail": "ok"})
 
     def put(self, request: Request, pk: int) -> JsonResponse:
+        """Редактирование полей оборудования с указанным id."""
         equipment = self._service.fetch_by_id(pk)
 
         if equipment is None:
@@ -87,14 +90,12 @@ class EquipmentController(APIView):
         )
 
 
-from django.db import connection, reset_queries
-
-
 class EquipmentControllerList(APIView):
     permission_classes = [IsAuthenticated]
     _service: EquipmentService = EquipmentService()
 
     def get(self, request: Request) -> JsonResponse:
+        """Получение списка оборудования с фильтрацией и пагинацией."""
         pages_count, equipments = self._service.filter_by(
             serial_number=request.query_params.get("serial_number"),
             description=request.query_params.get("description"),
@@ -113,12 +114,16 @@ class EquipmentControllerList(APIView):
         )
 
     def post(self, request: Request) -> JsonResponse:
+        """Создание одного или несколько записей с оборудованием, если часть записей будет некорректной,
+        то корретные данные будут сохранены, а некорректные вернуться пользователю с указанием ошибок.
+        """
         if not isinstance(request.data, list):
             return JsonResponse(
                 {
                     "data": "",
                     "detail": "Expected JSON array",
                 },
+                status=HTTP_422_UNPROCESSABLE_ENTITY,
             )
 
         validated_data = []

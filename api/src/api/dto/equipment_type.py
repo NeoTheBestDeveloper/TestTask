@@ -7,6 +7,8 @@ __all__ = [
 
 @dataclass(slots=True, frozen=True)
 class EquipmentType:
+    """Представление типа оборудования в бизнес логике."""
+
     id: int
     name: str
     serial_number_mask: str

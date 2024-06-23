@@ -1,11 +1,10 @@
-from typing import Mapping
-from re import match
+from collections.abc import Mapping
 
-from rest_framework.serializers import CharField, IntegerField, Serializer, ValidationError, UniqueTogetherValidator
 from django.db.models import ObjectDoesNotExist
-
+from rest_framework.serializers import CharField, IntegerField, Serializer, UniqueTogetherValidator, ValidationError
 
 from api.models import EquipmentModel, EquipmentTypeModel
+from api.utils import is_serial_number_valid
 
 __all__ = [
     "UpdateEquipmentSerializer",
@@ -13,6 +12,8 @@ __all__ = [
 
 
 class UpdateEquipmentSerializer(Serializer):
+    """Сериализатор для валидации данных оборудования, требуемых для обновления его полей."""
+
     type_id = IntegerField(required=True)
     serial_number = CharField(
         required=True,
@@ -29,14 +30,8 @@ class UpdateEquipmentSerializer(Serializer):
             ),
         ]
 
-    def _regexp_pattern_from_mask(self, mask: str) -> str:
-        pattern = mask.replace("Z", r"[\-_@]")
-        pattern = pattern.replace("N", r"\d")
-        pattern = pattern.replace("A", "[A-Z]")
-        pattern = pattern.replace("a", "[a-z]")
-        return f"^{pattern.replace("X", "[A-Z0-9]")}$"
-
     def validate(self, attrs: Mapping) -> Mapping:
+        """Валидация полей. Проверка на существования типа оборудования из type_id и корректности серийного номера."""
         type_id = attrs["type_id"]
         serial_number = attrs["serial_number"]
 
@@ -46,9 +41,7 @@ class UpdateEquipmentSerializer(Serializer):
             msg = f"Equipment type with id={type_id} does not exists"
             raise ValidationError(msg)
 
-        pattern = self._regexp_pattern_from_mask(type_obj.serial_number_mask)
-
-        if not match(pattern, serial_number):
+        if not is_serial_number_valid(serial_number, type_obj.serial_number_mask):
             msg = f"Серийный номер '{serial_number}' не подходит для маски '{type_obj.serial_number_mask}'"
             raise ValidationError(msg)
 
