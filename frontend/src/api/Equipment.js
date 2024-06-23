@@ -1,7 +1,7 @@
 import { getClient } from "./Config"
 
 export const createEquipmentsAPI = async (data) => {
-    return await getClient().post("/equipment/", data);
+    return (await getClient().post("/equipment/", data)).data;
 }
 
 export const fetchEquipmentsAPI = async (page, filterByKey, filterByValue) => {

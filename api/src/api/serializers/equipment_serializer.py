@@ -22,6 +22,7 @@ class EquipmentSerializer(Serializer):
             UniqueTogetherValidator(
                 queryset=EquipmentModel.objects.filter(archived=False),
                 fields=["serial_number", "type_id"],
+                message="Серийный номер должен быть уникальным.",
             ),
         ]
 
@@ -45,7 +46,7 @@ class EquipmentSerializer(Serializer):
         pattern = self._regexp_pattern_from_mask(type_obj.serial_number_mask)
 
         if not match(pattern, serial_number):
-            msg = f"Serial number '{serial_number}' is not valid for mask '{type_obj.serial_number_mask}'"
+            msg = f"Серийный номер '{serial_number}' не подходит для маски '{type_obj.serial_number_mask}'"
             raise ValidationError(msg)
 
         return super().validate(attrs)

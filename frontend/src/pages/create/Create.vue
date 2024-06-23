@@ -8,6 +8,8 @@ const isLoading = ref(true);
 const valid = ref(false);
 const selectedType = ref("");
 const serialNumbers = ref([ref("")]);
+const serialNumbersErrors = ref([ref("")]);
+
 const description = ref("");
 
 let types = [];
@@ -32,7 +34,14 @@ const createEquipment = async () => {
     description.value = "";
     serialNumbers.value = [ref("")];
     selectedType.value = "";
-  } catch (error) {}
+  } catch (error) {
+    serialNumbers.value = [];
+    serialNumbersErrors.value = [];
+    for (const item of error.response.data.detail) {
+      serialNumbers.value.push(ref(item.data.serial_number));
+      serialNumbersErrors.value.push(ref(item.detail.non_field_errors[0]));
+    }
+  }
 
 }
 
@@ -52,7 +61,7 @@ fetchTypes();
       <v-sheet  ms="auto" width="20%">
         <v-select v-model="selectedType" label="Тип оборудования" :items="types"></v-select>
         <v-list lines="one">
-          <v-text-field label="Серийный номер" :key="i" v-for="(_, i) in serialNumbers" v-model="serialNumbers[i].value">
+          <v-text-field label="Серийный номер" :key="i" v-for="(_, i) in serialNumbers" v-model="serialNumbers[i].value" :error-messages="serialNumbersErrors[i].value">
             <template v-slot:append>
               <v-icon color="red" @click="() => serialNumbers.splice(i, 1)">
                 mdi-delete
@@ -60,7 +69,10 @@ fetchTypes();
             </template>
              </v-text-field>
         </v-list>
-        <v-btn class="mb-4" @click="() => serialNumbers.push(ref(''))">Добавить серийный номер</v-btn>
+        <v-btn class="mb-4" @click="() => {
+          serialNumbers.push(ref(''));
+           serialNumbersErrors.push(ref(''));
+           }">Добавить серийный номер</v-btn>
         <v-textarea v-model="description" label="Описание" hide-details required></v-textarea>
         <v-btn class="mt-2" type="submit" block>Добавить оборудование</v-btn>
       </v-sheet>
