@@ -13,11 +13,11 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 
-const app = createApp(App)
+const app = createApp(App);
 const pinia = createPinia();
 const vuetify = createVuetify({
     components,
     directives,
-})
+});
 
-app.use(router).use(pinia).use(vuetify).mount("#app")
+app.use(router).use(pinia).use(vuetify).mount("#app");

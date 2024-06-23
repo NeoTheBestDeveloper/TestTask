@@ -13,28 +13,15 @@ const isLoading = ref(true);
 let types = [];
 
 const editEquipment = async () => {
-    console.log(types, typeName.value, types.findIndex((i) => i.title == typeName.value));
     const type = types[types.findIndex((i) => i.title == typeName.value)];
     await editEquipmentAPI(id.value, serialNumber.value, type.id, description.value)
 }
 
 const fetchTypes = () => {
-  let fetchedData = [];
-
-  fetchTypesAPI().then((data) => {
-    fetchedData = data.data;
-
-    fetchedData = fetchedData.flatMap((item) => {
-      return {
-        id: item.id,
-        title: item.name,
-        serial_number_mask: item.serial_number_mask,
-      }
-    })
-
-    isLoading.value = false;
-    types = fetchedData;
-  });  
+    fetchTypesAPI().then((data) => {
+        types = data;
+        isLoading.value = false;
+    });
 }
 
 fetchTypes();

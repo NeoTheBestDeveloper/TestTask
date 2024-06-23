@@ -14,7 +14,6 @@ let types = [];
 
 const createEquipment = async () => {
   const selectedTypeIdx = types.findIndex(i => i.title == selectedType.value);
-  console.log(types, selectedTypeIdx, selectedType.value);
   const typeId = types[selectedTypeIdx].id;
   const sendData = [];
 
@@ -38,22 +37,10 @@ const createEquipment = async () => {
 }
 
 const fetchTypes = () => {
-  let fetchedData = [];
-
-  fetchTypesAPI().then((data) => {
-    fetchedData = data.data;
-
-    fetchedData = fetchedData.flatMap((item) => {
-      return {
-        id: item.id,
-        title: item.name,
-        serial_number_mask: item.serial_number_mask,
-      }
-    })
-
-    isLoading.value = false;
-    types = fetchedData;
-  });  
+    fetchTypesAPI().then((data) => {
+        types = data;
+        isLoading.value = false;
+    });
 }
 
 fetchTypes();
@@ -65,7 +52,7 @@ fetchTypes();
       <v-sheet  ms="auto" width="20%">
         <v-select v-model="selectedType" label="Тип оборудования" :items="types"></v-select>
         <v-list lines="one">
-          <v-text-field label="Серийный номер"  v-for="(_, i) in serialNumbers" v-model="serialNumbers[i].value">
+          <v-text-field label="Серийный номер" :key="i" v-for="(_, i) in serialNumbers" v-model="serialNumbers[i].value">
             <template v-slot:append>
               <v-icon color="red" @click="() => serialNumbers.splice(i, 1)">
                 mdi-delete

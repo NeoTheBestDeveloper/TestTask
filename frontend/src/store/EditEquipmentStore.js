@@ -1,11 +1,24 @@
-import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { defineStore } from 'pinia';
 
-export const useEditEquipmentStore = defineStore('edit-equipment', () => {
-    const id = ref(0);
-    const serialNumber = ref("");
-    const typeName = ref("");
-    const description = ref("");
+export const useEditEquipmentStore = defineStore('edit-equipment', {
+    state: () => ({
+        // Свойства редактируемого оборудования
+        id: 0,
+        serialNumber: "",
+        typeName: "",
+        description: "",
 
-    return { id, serialNumber, typeName, description };
+        // Флаг, показывающий есть ли сейчас оборудование, которое нужно отредактировать. 
+        hasEquipment: false,
+    }),
+    actions: {
+        setEquipment(equipment) {
+            this.id = equipment.id;
+            this.serialNumber = equipment.serial_number;
+            this.typeName = equipment.type_name;
+            this.description = equipment.description;
+
+            this.hasEquipment = true;
+        },
+    }
 })

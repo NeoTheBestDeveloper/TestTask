@@ -45,7 +45,7 @@ class EquipmentRepository:
 
         try:
             result = paginator.page(page)
-            return paginator.num_pages, [
+            equipments = [
                 Equipment(
                     id=item.id,
                     type_name=item.type.name,
@@ -55,8 +55,12 @@ class EquipmentRepository:
                 for item in result
             ]
 
+            if equipments:
+                return paginator.num_pages, equipments
+            return 0, equipments
+
         except EmptyPage:
-            return paginator.num_pages, []
+            return 0, []
 
     def soft_delete(self, equipment_id: int) -> None:
         self._manager.filter(pk=equipment_id, archived=False).update(archived=True)
