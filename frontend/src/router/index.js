@@ -7,7 +7,7 @@ import Create from '@/pages/create/Create.vue';
 import Edit from '@/pages/edit/Edit.vue';
 import { useAuthStore } from '@/store/AuthStore';
 import { storeToRefs } from 'pinia';
-import { fetchMeAPI } from '@/api/Auth';
+import { checkMeAuth } from '@/api/Auth';
 
 
 const router = createRouter({
@@ -48,13 +48,7 @@ router.beforeEach(async (to, from) => {
 
   if (!isAuthChecked.value) {
     isAuthChecked.value = true;
-
-    try {
-      await fetchMeAPI();
-      isAuthenticated.value = true;
-    } catch {
-
-    }
+    isAuthenticated.value = await checkMeAuth();
   }
 
   if (!isAuthenticated.value && (to.name !== 'login' && to.name !== 'register')) {

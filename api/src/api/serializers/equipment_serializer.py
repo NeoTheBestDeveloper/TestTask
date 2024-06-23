@@ -3,7 +3,6 @@ from re import match
 from django.db.models import ObjectDoesNotExist
 from rest_framework.serializers import CharField, IntegerField, Serializer, ValidationError
 from rest_framework.validators import UniqueTogetherValidator
-from rest_framework.validators import UniqueValidator
 
 from api.models import EquipmentModel, EquipmentTypeModel
 

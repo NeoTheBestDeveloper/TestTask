@@ -90,18 +90,6 @@ class EquipmentController(APIView):
 from django.db import connection, reset_queries
 
 
-def log_sql(function):
-    def wrapper(*args, **kwargs):
-        reset_queries()
-        result = function(*args, **kwargs)
-        for query in connection.queries:
-            print("-" * 12)
-            print(f'{query["time"]}: {query["sql"]}')
-        return result
-
-    return wrapper
-
-
 class EquipmentControllerList(APIView):
     permission_classes = [IsAuthenticated]
     _service: EquipmentService = EquipmentService()

@@ -1,7 +1,6 @@
 from typing import ClassVar
 
 from django.core.paginator import EmptyPage, Paginator
-from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Manager
 
 from api.models import EquipmentModel, EquipmentTypeModel

@@ -2,7 +2,7 @@ import axios from 'axios'
 
 const baseURL = 'http://localhost/api';
 
-const getToken = () => {
+export const getToken = () => {
     return localStorage.getItem('token');
 }
 

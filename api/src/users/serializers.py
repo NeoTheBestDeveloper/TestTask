@@ -1,20 +1,23 @@
 from django.contrib.auth.models import User
-from rest_framework.serializers import CharField, ModelSerializer
+from rest_framework.serializers import CharField, Serializer
+from rest_framework.validators import UniqueValidator
 
 __all__ = [
-    "UserSerializer",
+    "UserLoginSerializer",
+    "UserCreateSerializer",
 ]
 
 
-class UserSerializer(ModelSerializer):
-    password = CharField(write_only=True)
+class UserLoginSerializer(Serializer):
+    username = CharField(max_length=255, required=True)
+    password = CharField(max_length=255, required=True)
 
-    class Meta:
-        model = User
-        fields = ("username", "email", "password")
 
-    def create(self, validated_data):
-        user = User(email=validated_data["email"], username=validated_data["username"])
-        user.set_password(validated_data["password"])
-        user.save()
-        return user
+class UserCreateSerializer(Serializer):
+    username = CharField(
+        max_length=150,
+        required=True,
+        validators=[UniqueValidator(User.objects.all(), message="Пользователь с таким логином уже существует")],
+    )
+    email = CharField(max_length=254, required=True)
+    password = CharField(max_length=255, required=True)
