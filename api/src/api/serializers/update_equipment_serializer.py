@@ -37,11 +37,7 @@ class UpdateEquipmentSerializer(Serializer):
             msg = f"Equipment type with id={type_id} does not exists"
             raise ValidationError(msg)
 
-        if (
-            old_equipment.type_name == type_obj.name
-            and old_equipment.serial_number == serial_number
-            and old_equipment.description == attrs["description"]
-        ):
+        if old_equipment.type_name == type_obj.name and old_equipment.serial_number == serial_number:
             return super().validate(attrs)
 
         if not is_serial_number_valid(serial_number, type_obj.serial_number_mask):

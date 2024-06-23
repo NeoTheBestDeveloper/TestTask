@@ -80,7 +80,7 @@ class EquipmentController(APIView):
                 status=HTTP_422_UNPROCESSABLE_ENTITY,
             )
 
-        new_equipment = self._service.update(id=pk, **serializer.validated_data)
+        new_equipment = self._service.update(pk=pk, **serializer.validated_data)
 
         return JsonResponse(
             {
@@ -96,7 +96,7 @@ class EquipmentControllerList(APIView):
 
     def get(self, request: Request) -> JsonResponse:
         """Получение списка оборудования с фильтрацией и пагинацией."""
-        pages_count, equipments = self._service.filter_by(
+        pages_count, equipments = self._service.filter_with_pagination(
             serial_number=request.query_params.get("serial_number"),
             description=request.query_params.get("description"),
             limit=request.query_params.get("limit") or settings.DEFAULT_PAGINATION_LIMIT,

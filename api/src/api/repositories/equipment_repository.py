@@ -105,6 +105,10 @@ class EquipmentRepository:
 
     def update(self, pk: int, serial_number: str, description: str, type_id: int) -> Equipment:
         """Обновит поля serial_number, description, type_id у оборудования с указанным pk."""
-        self._manager.filter(pk=pk).update(serial_number=serial_number, description=description, type_id=type_id)
+        self._equipment_manager.filter(pk=pk).update(
+            serial_number=serial_number,
+            description=description,
+            type_id=type_id,
+        )
         new_type = self._equipment_type_manager.filter(pk=type_id).only("name").first()
         return Equipment(pk, new_type.name, serial_number, description)
