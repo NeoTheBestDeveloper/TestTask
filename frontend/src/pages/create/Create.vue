@@ -33,6 +33,7 @@ const createEquipment = async () => {
     await createEquipmentsAPI(sendData);
     description.value = "";
     serialNumbers.value = [ref("")];
+    serialNumbersErrors.value = [ref("")];
     selectedType.value = "";
   } catch (error) {
     serialNumbers.value = [];

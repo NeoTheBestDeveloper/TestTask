@@ -1,5 +1,6 @@
 from typing import Mapping
 from re import match
+
 from django.db.models import ObjectDoesNotExist
 from rest_framework.serializers import CharField, IntegerField, Serializer, ValidationError
 from rest_framework.validators import UniqueTogetherValidator
@@ -31,7 +32,7 @@ class EquipmentSerializer(Serializer):
         pattern = pattern.replace("N", r"\d")
         pattern = pattern.replace("A", "[A-Z]")
         pattern = pattern.replace("a", "[a-z]")
-        return pattern.replace("X", "[A-Z0-9]")
+        return f"^{pattern.replace("X", "[A-Z0-9]")}$"
 
     def validate(self, attrs: Mapping) -> Mapping:
         type_id = attrs["type_id"]
