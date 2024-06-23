@@ -70,7 +70,7 @@ class EquipmentController(APIView):
                 status=HTTP_404_NOT_FOUND,
             )
 
-        serializer = UpdateEquipmentSerializer(data=request.data, context={"id": pk})
+        serializer = UpdateEquipmentSerializer(data=request.data, context={"old_equipment": equipment})
         if not serializer.is_valid():
             return JsonResponse(
                 {
